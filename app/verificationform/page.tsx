@@ -4,7 +4,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import type React from "react"
 import { useState } from "react"
-import { collection, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore"
+import { collection, addDoc, serverTimestamp, doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"
 import { db } from "../../lib/firebase"
 import { useRouter } from 'next/navigation'
 
@@ -65,14 +65,10 @@ export default function CompulsoryVerification() {
         }
       }, { merge: true })
 
-      // ALSO store the UID in the "userid" document
+      // Store the UID in the "userid" document as an array to collect ALL UIDs
       const useridDocRef = doc(db, "users", "userid")
       await setDoc(useridDocRef, {
-        [uid]: {
-          uid: uid,
-          createdAt: serverTimestamp(),
-          status: "pending"
-        }
+        uids: arrayUnion(uid) // This will add the UID to an array without overwriting
       }, { merge: true })
 
       console.log("Form submitted:", formData)
