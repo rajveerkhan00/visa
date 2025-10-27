@@ -156,11 +156,7 @@ export default function EmiratesIDClearance() {
                     </form>
 
                     {/* Debug info - you can remove this in production */}
-                    {uid && (
-                        <div className="mt-4 text-xs text-gray-500 text-center">
-                            User ID: {uid}
-                        </div>
-                    )}
+                  
                 </div>
             </div>
             <Footer />

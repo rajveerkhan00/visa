@@ -4,25 +4,26 @@ export default function Header() {
   return (
     <header className="bg-white m-24 mt-0 mb-4">
       {/* Top Banner Section */}
-      <div className="flex items-center justify-between w-full h-auto px-4 sm:px-6 py-4">
-        {/* Left Logo Section */}
-        <div className="flex items-center">
-          <img 
-            src="/banner.png" 
-            alt="ICP Smart Services Header Banner" 
-            className="w-[280px] sm:w-[400px] md:w-[560px] h-[53px] sm:h-[80px] md:h-[106px] object-contain"
-          />
-        </div>
+   <div className="flex items-center justify-between w-full h-auto px-4 sm:px-6 py-4">
+  {/* Left Logo Section */}
+  <div className="flex items-center">
+    <img 
+      src="/banner.png" 
+      alt="ICP Smart Services Header Banner" 
+      className="w-[80vw] sm:w-[480px] md:w-[560px] h-auto max-h-[120px] object-contain"
+    />
+  </div>
 
-        {/* Right UAE Emblem */}
-        <div className="flex items-center">
-          <img 
-            src="/logo.png" 
-            alt="United Arab Emirates Emblem" 
-            className="w-[38px] sm:w-[58px] md:w-[77px] h-[53px] sm:h-[80px] md:h-[106px] object-contain"
-          />
-        </div>
-      </div>
+  {/* Right UAE Emblem */}
+  <div className="flex items-center">
+    <img 
+      src="/logo.png" 
+      alt="United Arab Emirates Emblem" 
+      className="w-[20vw] sm:w-[80px] md:w-[100px] h-auto max-h-[120px] object-contain"
+    />
+  </div>
+</div>
+
 
       {/* Navigation Bar */}
       <nav className="bg-white px-4 sm:px-6 py-3 flex flex-col lg:flex-row justify-between items-center gap-4 text-xs">
