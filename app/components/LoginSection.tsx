@@ -13,7 +13,7 @@ export default function LoginSection() {
       id="login-section"
       className="bg-white w-[80%] md:w-full mx-auto scroll-mt-24 py-12 md:py-16"
     >
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 md:mr-222">
         {/* Login by email section */}
         <div className="max-w-sm mx-auto mb-8 md:mb-12">
           {/* Top divider line */}
