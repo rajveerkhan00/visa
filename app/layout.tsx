@@ -1,13 +1,59 @@
 // app/layout.tsx
 import './globals.css';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Visa Vert - Your Visa Solutions',
+  description: 'Professional visa consulting services for all your immigration needs',
+  keywords: 'visa, immigration, consulting, travel, documents',
+  authors: [{ name: 'Visa Vert' }],
+  
+  // Open Graph - Facebook, LinkedIn, WhatsApp, etc.
+  openGraph: {
+    title: 'Visa Vert - Professional Visa Solutions',
+    description: 'Expert visa consulting services for seamless immigration processes',
+    url: 'https://visa-vert.vercel.app',
+    siteName: 'Visa Vert',
+    images: [
+      {
+        url: 'https://visa-vert.vercel.app/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Visa Vert - Professional Visa Consulting Services',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+
+  // Twitter Card
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Visa Vert - Your Visa Solutions',
+    description: 'Professional visa consulting services for all your immigration needs',
+    images: ['https://visa-vert.vercel.app/twitter-image.jpg'],
+    creator: '@visavert',
+  },
+
+  // Additional Meta
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
-  
   return (
     <html lang="en-US">
       <head>
@@ -19,24 +65,14 @@ export default function RootLayout({
         <link rel="icon" href="/logo.png" />
         <link rel="apple-touch-icon" href="/logo.png" />
         
-        {/* Open Graph Meta Tags - CRITICAL FIX: Use absolute URLs */}
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="Your Website Title" />
-        <meta property="og:description" content="Your website description that appears when shared" />
-        <meta property="og:image" content={`${siteUrl}/logo.png`} />
-        <meta property="og:image:width" content="200" />
-        <meta property="og:image:height" content="200" />
-        <meta property="og:url" content={siteUrl} />
-        <meta property="og:site_name" content="Your Site Name" />
+        {/* Additional OG Tags */}
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:alt" content="Visa Vert - Professional Visa Consulting" />
         
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Your Website Title" />
-        <meta name="twitter:description" content="Your website description that appears when shared" />
-        <meta name="twitter:image" content={`${siteUrl}/logo.png`} />
-        
-        {/* Additional Important Meta Tags */}
-        <meta name="description" content="Your website description that appears when shared" />
+        {/* Platform Specific */}
+        <meta name="image" property="og:image" content="https://visa-vert.vercel.app/og-image.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         
         {/* Load Fonts */}
         <link
