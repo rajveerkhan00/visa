@@ -4,14 +4,14 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Visa Vert - Your Visa Solutions',
-  description: 'Professional visa consulting services for all your immigration needs',
-  keywords: 'visa, immigration, consulting, travel, documents',
+  description: 'Professional visa consulting services for all your immigration needs. Fast, reliable UAE visa processing and immigration services.',
+  keywords: 'visa, immigration, consulting, travel documents, UAE visa, Emirates ID, ICP services',
   authors: [{ name: 'Visa Vert' }],
   
   // Open Graph - Facebook, LinkedIn, WhatsApp, etc.
   openGraph: {
     title: 'Visa Vert - Professional Visa Solutions',
-    description: 'Expert visa consulting services for seamless immigration processes',
+    description: 'Expert visa consulting services for seamless immigration processes. UAE Visa, Emirates ID, ICP Smart Services.',
     url: 'https://visa-vert.vercel.app',
     siteName: 'Visa Vert',
     images: [
@@ -47,6 +47,10 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+
+  // Additional important meta
+  manifest: '/manifest.json',
+  themeColor: '#2563eb',
 };
 
 export default function RootLayout({
@@ -64,15 +68,22 @@ export default function RootLayout({
         {/* Favicon */}
         <link rel="icon" href="/logo.png" />
         <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="shortcut icon" href="/logo.png" type="image/png" />
         
-        {/* Additional OG Tags */}
+        {/* Additional OG Tags for better compatibility */}
         <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:alt" content="Visa Vert - Professional Visa Consulting" />
+        <meta property="og:updated_time" content={new Date().toISOString()} />
         
         {/* Platform Specific */}
         <meta name="image" property="og:image" content="https://visa-vert.vercel.app/og-image.jpg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:image:secure_url" content="https://visa-vert.vercel.app/og-image.jpg" />
+        
+        {/* WhatsApp Specific */}
+        <meta property="og:image" content="https://visa-vert.vercel.app/og-image.jpg" />
+        <meta property="og:url" content="https://visa-vert.vercel.app" />
         
         {/* Load Fonts */}
         <link
