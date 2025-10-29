@@ -9,7 +9,33 @@ export default function RootLayout({
   return (
     <html lang="en-US">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        {/* Basic Meta Tags */}
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        {/* Favicon */}
+        <link rel="icon" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        
+        {/* Open Graph Meta Tags - Essential for Social Sharing */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Your Website Title" />
+        <meta property="og:description" content="Your website description that appears when shared" />
+        <meta property="og:image" content="/logo.png" />
+        <meta property="og:url" content="https://yourwebsite.com" />
+        <meta property="og:site_name" content="Your Site Name" />
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Your Website Title" />
+        <meta name="twitter:description" content="Your website description that appears when shared" />
+        <meta name="twitter:image" content="/logo.png" />
+        
+        {/* Additional Important Meta Tags */}
+        <meta name="description" content="Your website description that appears when shared" />
+        <meta name="keywords" content="your, keywords, here" />
+        <meta name="author" content="Your Name" />
+        
         {/* Load Font Awesome 4.7.0 for compatibility with old icons */}
         <link
           rel="stylesheet"
